@@ -52,16 +52,16 @@ arrays. `tabs` is an array of objects that defines your tabs, `views` is an arra
 of objects that define what you'll show after user clicks a tab.
 
   - `tabs` array of objects
-    - `name` | string, name of the tab, can be the same as the tab id (element_id)
-    - `element_id` | string, id of the tab html element
-    - `show` | a string or an array of strings, what view/s to show after a tab has been clicked.
-    - `default` | boolean, If true the tab will be handled (clicked) on DOM ready
+    - `name` is a string, name of the tab, can be the same as the tab id (element_id)
+    - `element_id` is a string, id of the tab html element
+    - `show` is a string or an array of strings, what view/s to show after a tab has been clicked.
+    - `default` is a boolean, If true the tab will be handled (clicked) on DOM ready
 
   - `views` array of objects
-    - `name` | string, name of the view, can be the same as the view id (element_id)
-    - `element_id` | string, the id of the html element that will be shown (after Its been hidden, `meni.js` automatically hides all views) by default.
+    - `name` is a string, name of the view, can be the same as the view id (element_id)
+    - `element_id` is a string, the id of the html element that will be shown (after Its been hidden, `meni.js` automatically hides all views) by default.
 
-Remember, for each tab you need a view defined. One more thing.
+Remember, for each tab you need a view defined. One more thing...
 
 ### Step 2 - Handle your clicks
 ```javascript
