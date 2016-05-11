@@ -1,7 +1,7 @@
 (function () {
   "use strict";
   /*!
-   * meni.js 1.0.1
+   * meni.js 1.0.2
    *
    * Copyright (c) 2016 Muhamed Krlić
    *
@@ -86,49 +86,45 @@
       if(!options){
         options = $.meni.defaults
       }
+      var _TabViews = _.filter(TabViews, {tab_id: tab_id});
 
-      _.forEach(_.filter(TabViews, {tab_id: tab_id}), function(TabView){
+      // Reset all active Tabs (should be just one Tab)
+      _.forEach(_.filter(Tabs, {active: true}), function(Tab){
+        Tab.active = false;
+        $('#'+Tab.elem_id).removeClass(options.activeTabClass);
+      });
+      // Reset all active Views except those which are shown by this tab
+      _.forEach(_.filter(Views, {active: true}), function(View){
+        View.active = false;
+        $('#'+View.elem_id).hide();
+        if(options.activeViewClass)
+          $('#'+View.elem_id).addClass(options.activeViewClass);
+      });
 
-        var _Tab  = _.find(Tabs, {elem_id: TabView.tab_id});
-        if(!_Tab){
+      _.forEach(_TabViews, function(TabView){
+
+        var tab  = _.find(Tabs, {elem_id: TabView.tab_id});
+        if(!tab){
             console.error('Tab not found.');
             return;
         }
-        var _Views = _.filter(Views, {elem_id: TabView.view_id});
+        var view = _.find(Views, {elem_id: TabView.view_id});
 
         // Check If Views is empty, this shouldn't happen, ever.
-        if(_Views.length < 1){
-          console.error('Tab "'+_Tab.name+'" has a corrupt View.');
+        if(!view){
+          console.error('TabView with tab name "'+tab.name+'" has a corrupt View.');
           return;
         }
 
-
-        // Reset all active Tabs (should be just one Tab)
-        _.forEach(_.filter(Tabs, {active: true}), function(Tab){
-          Tab.active = false;
-          $('#'+Tab.elem_id).removeClass(options.activeTabClass);
-        });
-        // Reset all active Views (could be more then 1)
-        _.forEach(_.filter(Views, {active: true}), function(View){
-          View.active = false;
-          $('#'+View.elem_id).hide();
-          if(options.activeViewClass)
-            $('#'+View.elem_id).addClass(options.activeViewClass);
-        });
-
-
-
-        _Tab.active = true;
+        tab.active = true;
         // You can use activeTabClass setting to choose the active css class
-        $('#'+_Tab.elem_id).addClass(options.activeTabClass);
+        $('#'+tab.elem_id).addClass(options.activeTabClass);
 
-        // Show each and every View that active Tab has defined. ( Usually just 1 )
-        _.forEach(_Views, function(View){
-          View.active = true;
-          $('#'+View.elem_id).show();
-          if(options.activeViewClass)
-            $('#'+View.elem_id).addClass(options.activeViewClass);
-        });
+        view.active = true;
+        $('#'+view.elem_id).show();
+        if(options.activeViewClass)
+          $('#'+view.elem_id).addClass(options.activeViewClass);
+
       });
     };
   };
@@ -154,12 +150,6 @@
     }
     return this._handle(tab_id, options);
   };
-
-
-  // prevent another load? maybe there is a better way?
-  if ($.meni) {
-    return;
-  }
 
   // Plugin definition.
   $.meni = {
@@ -212,7 +202,6 @@
         // Further inspect Tabs array objects.
       }
 
-
       // Define menu objects
       var self = new TabbedMenu();
 
@@ -238,8 +227,6 @@
         }
       });
 
-
-
       // Last step is to handle the clicks.
       // Meteor has Its own DOM handler, but If you're not using it you can
       //  use jQuery .click()
@@ -250,6 +237,5 @@
       }
       // $.meni.tabbedMenu returns the TabbedMenu that has the handle function
       return self;
-
   };
 })();
