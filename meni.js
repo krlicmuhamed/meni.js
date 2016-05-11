@@ -1,7 +1,7 @@
 (function () {
   "use strict";
   /*!
-   * meni.js 1.0.0
+   * meni.js 1.0.1
    *
    * Copyright (c) 2016 Muhamed Krlić
    *
@@ -13,7 +13,7 @@
   if ($.meni) {
    return;
   }
-  
+
   var TabbedMenu = function () {
     var Tabs   = [];
     var Views  = [];
@@ -74,9 +74,8 @@
         return;
       }
 
-      if(def == true){
+      if(def === true){
         this.setDefaultTab(id);
-        console.log(this.getDefaultTab());
       }
 
       var Tab = {name: name, elem_id: id, active: false};
@@ -89,8 +88,6 @@
       }
 
       _.forEach(_.filter(TabViews, {tab_id: tab_id}), function(TabView){
-
-        console.log(Tabs, TabView);
 
         var _Tab  = _.find(Tabs, {elem_id: TabView.tab_id});
         if(!_Tab){
@@ -109,12 +106,10 @@
         // Reset all active Tabs (should be just one Tab)
         _.forEach(_.filter(Tabs, {active: true}), function(Tab){
           Tab.active = false;
-          console.log('Deactivating:',Tab);
           $('#'+Tab.elem_id).removeClass(options.activeTabClass);
         });
         // Reset all active Views (could be more then 1)
         _.forEach(_.filter(Views, {active: true}), function(View){
-          console.log('Hiding:',View);
           View.active = false;
           $('#'+View.elem_id).hide();
           if(options.activeViewClass)
@@ -148,12 +143,10 @@
     if(typeof def === 'undefined'){
       var def = false;
     }
-    console.log(def);
     return this._defineTab(id, name, def);
   };
 
   TabbedMenu.prototype.handle = function(tab_id, options) {
-    console.log(tab_id, typeof tab_id);
     if(typeof tab_id === "undefined"){
       var tab_id = this.getDefaultTab();
     }else{
@@ -260,4 +253,3 @@
 
   };
 })();
-
