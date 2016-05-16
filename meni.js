@@ -157,7 +157,7 @@
      * specifies the jstree version in use
      * @name $.meni.version
      */
-    version: '1.0.0',
+    version: '1.0.2',
     /**
      * holds all the default options used when creating new instances
      * @name $.meni.defaults
