@@ -1,7 +1,7 @@
 (function () {
   "use strict";
   /*!
-   * meni.js 1.0.2
+   * meni.js 1.0.3
    *
    * Copyright (c) 2016 Muhamed Krlić
    *
@@ -19,9 +19,11 @@
     var Views  = [];
     var TabViews  = [];
     var defaultTab = '';
+    var Options = {};
+    var NestedObjects = [];
 
     this.get = function(){
-      return {Tabs: Tabs, Views: Views, TabViews: TabViews};
+      return {Tabs: Tabs, Views: Views, TabViews: TabViews, Options: Options};
     };
     this.setDefaultTab = function(d){
       defaultTab = d;
@@ -82,6 +84,9 @@
       Tabs.push(Tab);
       return Tab;
     };
+    this._defineNestedObject = function(o){
+      NestedObjects.push(o);
+    }
     this._handle = function(tab_id, options){
       if(!options){
         options = $.meni.defaults
@@ -98,8 +103,23 @@
         View.active = false;
         $('#'+View.elem_id).hide();
         if(options.activeViewClass)
-          $('#'+View.elem_id).addClass(options.activeViewClass);
+          $('#'+View.elem_id).removeClass(options.activeViewClass);
       });
+      // Reset all active nested Views
+      if(NestedObjects.length > 0){
+        _.forEach(NestedObjects, function(NestedObject){
+          var o = NestedObject.get();
+          var NestedViews = o.Views;
+          var NestedOptions = o.Options;
+          _.forEach(_.filter(NestedViews, {active: true}), function(NestedView){
+            NestedView.active = false;
+            $('#'+NestedView.elem_id).hide();
+            if(NestedOptions.activeViewClass)
+              $('#'+NestedView.elem_id).removeClass(NestedOptions.activeViewClass);
+          });
+        });
+      }
+
 
       _.forEach(_TabViews, function(TabView){
 
@@ -129,6 +149,9 @@
     };
   };
 
+  TabbedMenu.prototype.get = function() {
+    return this.get();
+  };
   TabbedMenu.prototype.defineView = function(id, name) {
     return this._defineView(id, name);
   };
@@ -141,7 +164,10 @@
     }
     return this._defineTab(id, name, def);
   };
-
+  TabbedMenu.prototype.defineNestedObject = function(o) {
+    if(o)
+      return this._defineNestedObject(o);
+  };
   TabbedMenu.prototype.handle = function(tab_id, options) {
     if(typeof tab_id === "undefined"){
       var tab_id = this.getDefaultTab();
@@ -157,7 +183,7 @@
      * specifies the jstree version in use
      * @name $.meni.version
      */
-    version: '1.0.2',
+    version: '1.0.3',
     /**
      * holds all the default options used when creating new instances
      * @name $.meni.defaults
@@ -177,7 +203,12 @@
        * sets the class of the view for active state (not set by default)
        * @name $.meni.defaults.activeViewClass
        */
-      activeViewClass: null
+      activeViewClass: null,
+      /**
+       * Nested $.meni objects, can be array of nested $.meni objects
+       * @name $.meni.defaults.nestedIn
+       */
+      nests: null
     }
   };
 
@@ -204,6 +235,18 @@
 
       // Define menu objects
       var self = new TabbedMenu();
+
+      // Set options for use in nested objects
+      self.Options = options;
+
+      // Define all nested objects
+      if(typeof options.nests === 'object'){
+        self.defineNestedObject(options.nests);
+      }else if (options.nests.constructor === Array) {
+        _.forEach(options.nests, function(NestedObject){
+          self.defineNestedObject(NestedObject);
+        });
+      }
 
       _.forEach(options.views, function(value){
         if(typeof value.name === 'string' && typeof value.element_id === 'string'){
