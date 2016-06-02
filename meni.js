@@ -1,7 +1,7 @@
 (function () {
   "use strict";
   /*!
-   * meni.js 1.0.1
+   * meni.js 1.0.2
    *
    * Copyright (c) 2016 Muhamed Krlić
    *
@@ -35,7 +35,7 @@
      * specifies the meni.js version in use
      * @name $.meni.version
      */
-    version: '1.0.1',
+    version: '1.0.2',
     /**
      * holds all the default options used when creating new instances
      * @name $.meni.defaults
@@ -66,7 +66,7 @@
       if(!setup[menu.dataset.meni] || setup[menu.dataset.meni] === {}){
         console.error('Menu \''+menu.dataset.meni+'\' doensn\'t contain setup info.');
       }
-      menu.options = {
+      menus[i].options = {
         activeClass: 'active',
         setup: setup
       };
@@ -82,10 +82,14 @@
             console.error('Menu tab \''+tab.dataset.meniTab+'\' must be defined in a LI tag.');
             continue;
           }
+          if(menu.children[j].parentElement.dataset.meni !== menu.dataset.meni){
+            console.error('Menu tab \''+tab.dataset.meniTab+'\' doesn\'t have \''+menu.dataset.meni+'\' parent.');
+            continue;
+          }
           // Handle tab click event.
-          menu.children[j].handle = function() {
-            change_active_tabs(menu, $(this)[0].dataset.meniTab);
-            show_hide_views(menu, $(this)[0].dataset.meniTab);
+          menus[i].children[j].handle = function() {
+            change_active_tabs($(this)[0].parentElement, $(this)[0].dataset.meniTab);
+            show_hide_views($(this)[0].parentElement, $(this)[0].dataset.meniTab);
           };
           // Register click event ( this will not work in Meteor,
           // use tab.handle to bind your own events instead. )
@@ -96,6 +100,7 @@
           if(tab.is('[default]') ) {
             tab[0].handle();
           }
+          console.log($(menu.children[j]));
         }else{
           console.error('Can\'t handle non-tab element. Did you forget to put the data-meni-tab attribute?');
           return;
