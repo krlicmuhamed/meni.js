@@ -57,6 +57,8 @@ is because `meni.js` wants to know the parent element that contains all your oth
 , so according to the example given above, when you click tab `home` It will hide all child elements
 that are in the container and then show your desired child element (view).
 
+Also, you have to define your default tab by setting `default` attribute in html.
+
 ### Step 2 - Handle your clicks
 `meni.js` already registers by default all tab click events with jQuery. This may
 not work If you use frameworks that have It's own event handling system (ex. Meteor).
