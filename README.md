@@ -1,97 +1,71 @@
 ![meni.js](http://i.imgur.com/nsvTANa.png)
-## A convenient javascript library for making dynamic menus
+## A convenient javascript library for making dynamic tabbed menus
 If you don't want to use some heavy front-end javascript framework and just want
 robust, convenient library to take care of the logic behind hiding/showing
 html elements - take a look at this bad boy!
 
 ### Requirements
   - `meni.js` is a jQuery plugin so you'll need jQuery (duh!)
-  - You'll also need lodash, grab your copy from [here](https://lodash.com/).
 
 ### Step 1 - Define your menu
-```javascript
-var myMenu = $.meni.tabbedMenu('.menu nav ul',{
-  tabs:  [
-    {
-      name:'myDevices',
-      element_id: 'menuDevices',
-      show:['devicesView'],
-      default: true
-    },
-    {
-      name:'myUsers',
-      element_id: 'menuUsers',
-      show:['usersView']
-    },
-    {
-      name:'mySettings',
-      element_id: 'menuSettings',
-      show:['settingsView']
-    }
-  ],
-  views: [
-    {
-      name:'devicesView',
-      element_id:'container_devices'
-    },
-    {
-      name:'usersView',
-      element_id:'container_users'
-    },
-    {
-      name:'settingsView',
-      element_id:'container_settings'
-    }
-  ]
-});
+Your HTML would look something like this:
+```html
+<ul data-meni="mainmenu">
+  <li data-meni-tab="home" default>Home</li>
+  <li data-meni-tab="about">About</li>
+</ul>
+
+<!-- Also define a container -->
+<div class="container">
+  <div id="home">HOME TAB CONTENT</div>
+  <div id="about" style="display:none">ABOUT TAB CONTENT</div>
+</div>
 ```
-This is how you define your tabbed menu. First argument is the selector string, you'll
-need a `ul` element in your menu, use this argument to select your `ul` element.
-Second argument is an object, in this object you'll need `tabs` and `views`
-arrays. `tabs` is an array of objects that defines your tabs, `views` is an array
-of objects that define what you'll show after user clicks a tab.
+And your Javascript would look something like this:
+```javascript
+var setup = {
+  'mainmenu':{
+    'home':{
+      show:{
+        '.container': '#home'
+      }
+    },
+    'about':{
+      show:{
+        '.container': '#about'
+      }
+    }
+  }
+};
+$.meni.init(setup);
+```
+This is how you define your tabbed menu. You have to pass a `setup` object into
+function `$.meni.init(setup);`. The `setup` object is an object that defines what
+to show when a tab is clicked. This object should follow this schema:
 
-  - `tabs` array of objects
-    - `name` is a string, name of the tab, can be the same as the tab id (element_id)
-    - `element_id` is a string, id of the tab html element
-    - `show` is a string or an array of strings, what view/s to show after a tab has been clicked.
-    - `default` is a boolean, If true the tab will be handled (clicked) on DOM ready
+  - SETUP OBJECT
+    - `menu` object, must have same key name as `data-meni` value in html.
+      - `tab` object, must have same key name as `data-meni-tab` value in html.
+        - `show:{}` object containing one or multiple views that should be shown on
+        tab click.
+          - `view` object, *key* name should be a selector to a container (wrapper)
+          that holds the element you want to show, *value* should be a string that
+          completes the selector to the desired element you want to show on tab click.
 
-  - `views` array of objects
-    - `name` is a string, name of the view, can be the same as the view id (element_id)
-    - `element_id` is a string, the id of the html element that will be shown (after Its been hidden, `meni.js` automatically hides all views) by default.
-
-Remember, for each tab you need a view defined. One more thing...
+The reason why you don't define a `view` just as a complete css selector (ex. '.container #home')
+is because `meni.js` wants to know the parent element that contains all your other views
+, so according to the example given above, when you click tab `home` It will hide all child elements
+that are in the container and then show your desired child element (view).
 
 ### Step 2 - Handle your clicks
+`meni.js` already registers by default all tab click events with jQuery. This may
+not work If you use frameworks that have It's own event handling system (ex. Meteor).
+In that case you may want to use `handle()` function that is defined in the tab object.
+It may look analogous to this:
 ```javascript
-$( "#menuDevices" ).click(function(event) {
-  myMenu.handle(event.target.id);
+$( '[data-meni="mainmenu"]' ).click(function(event) {
+  event.target.handle();
 });
-```
-
-You can also pass a second argument for options `myMenu.handle(event.target.id, options);`
-
-
-```javascript
-// Default options
-{
-    /**
-     * Handle (select) the default tab
-     * @name $.meni.defaults.handleDefault
-     */
-    handleDefault: true, // Choose true If you want your default tab to click itself :D
-    /**
-     * sets the class of the tab for active state
-     * @name $.meni.defaults.activeTabClass
-     */
-    activeTabClass: 'active',
-    /**
-     * sets the class of the view for active state (not set by default)
-     * @name $.meni.defaults.activeViewClass
-     */
-    activeViewClass: null
-}
 ```
 
 ### Step 3 - The hardest part
@@ -105,4 +79,3 @@ Didn't do a lot of tests, but chrome profiler averaged 8ms on each click, max 15
 ## Contribute
 
 That's right! All your contributions, suggestions and issues also help, so get to it. :)
-
