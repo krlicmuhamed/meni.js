@@ -74,10 +74,6 @@ $( '[data-meni="mainmenu"]' ).click(function(event) {
 
 Click all the buttons you've made and enjoy!
 
-### Benchmark
-
-Didn't do a lot of tests, but chrome profiler averaged 8ms on each click, max 15ms. (lodash helps a lot!).
-
 ## Contribute
 
 That's right! All your contributions, suggestions and issues also help, so get to it. :)
