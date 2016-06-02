@@ -1,7 +1,7 @@
 (function () {
   "use strict";
   /*!
-   * meni.js 1.0.0
+   * meni.js 1.0.1
    *
    * Copyright (c) 2016 Muhamed Krlić
    *
@@ -35,7 +35,7 @@
      * specifies the meni.js version in use
      * @name $.meni.version
      */
-    version: '1.0.0',
+    version: '1.0.1',
     /**
      * holds all the default options used when creating new instances
      * @name $.meni.defaults
